@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .quiz-container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .choices {
+            margin-bottom: 20px;
+        }
+
+        .choice {
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .choice:hover {
+            background-color: #e0e0e0;
+        }
+
+        .result {
+            font-size: 24px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .next-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Quiz App</h1>
+
+    <div class="quiz-container">
+        <div id="questionContainer">
+        </div>
+        <button id="nextButton" class="next-btn">Next</button>
+        <div id="result" class="result"></div>
+    </div>
+    <script>
+        const quizQuestions = [
+            {
+                question: "Which planet is known as the Red Planet?",
+                choices: ["Earth", "Mars", "Jupiter", "Venus"],
+                correctAnswer: "Mars"
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                choices: ["Elephant", "Blue Whale", "Shark", "Giraffe"],
+                correctAnswer: "Blue Whale"
+            },
+            {
+                question: "Who wrote 'To Kill a Mockingbird'?",
+                choices: ["Harper Lee", "J.K. Rowling", "George Orwell", "Mark Twain"],
+                correctAnswer: "Harper Lee"
+            }
+        ];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const questionContainer = document.getElementById("questionContainer");
+        const nextButton = document.getElementById("nextButton");
+        const resultContainer = document.getElementById("result");
+
+        function displayQuestion() {
+            const questionData = quizQuestions[currentQuestionIndex];
+            questionContainer.innerHTML = `
+                <div class="question">${questionData.question}</div>
+                <div class="choices">
+                    ${questionData.choices.map(choice => `
+                        <div class="choice">${choice}</div>
+                    `).join('')}
+                </div>
+            `;
+            const choiceElements = document.querySelectorAll('.choice');
+            choiceElements.forEach(choiceElement => {
+                choiceElement.addEventListener('click', handleChoiceClick);
+            });
+        }
+        function handleChoiceClick(event) {
+            const selectedChoice = event.target.textContent;
+            const correctAnswer = quizQuestions[currentQuestionIndex].correctAnswer;
+
+            if (selectedChoice === correctAnswer) {
+                score++;
+                event.target.style.backgroundColor = 'lightgreen';
+            } else {
+                event.target.style.backgroundColor = 'salmon';
+            }
+
+            const allChoices = document.querySelectorAll('.choice');
+            allChoices.forEach(choice => {
+                choice.style.pointerEvents = 'none';
+            });
+            nextButton.disabled = false;
+        }
+
+        nextButton.addEventListener('click', () => {
+            const allChoices = document.querySelectorAll('.choice');
+            allChoices.forEach(choice => {
+                choice.style.backgroundColor = '';
+            });
+            nextButton.disabled = true;
+
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                displayResults();
+            }
+        });
+        function displayResults() {
+            questionContainer.innerHTML = '';
+            resultContainer.innerHTML = `Your final score is: ${score} out of ${quizQuestions.length}`;
+            nextButton.style.display = 'none';
+        }
+
+        displayQuestion();
+    </script>
+</body>
+</html>
